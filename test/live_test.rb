@@ -5,7 +5,7 @@ require "mapricot/api"
 
 class LiveTest < Minitest::Test
   def client
-    skip "set MAPRICOT_KEY to run tests against the live API" unless ENV["MAPRICOT_KEY"]
+    skip "set MAPRICOT_KEY to run tests against the live API" if ENV["MAPRICOT_KEY"].to_s.empty?
     @client ||= Mapricot::Client.new
   end
 
