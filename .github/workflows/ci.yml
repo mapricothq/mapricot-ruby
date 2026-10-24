@@ -1,0 +1,37 @@
+name: CI
+# Tests against the live API on every push and pull request, and weekly to catch API changes.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        ruby: ['3.1', '3.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - run: bundle exec rake
+        env:
+          MAPRICOT_KEY: ${{ secrets.MAPRICOT_KEY }}
+  endpoints:
+    # Fails when the API gains an endpoint that this client has no method for.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - run: |
+          curl -fsS https://api.mapricot.com/openapi.json | jq -r '.paths | keys[] | sub("\\{.*"; "")' | while read -r path; do
+            grep -rqF "$path" lib || { echo "::error::No method for $path"; exit 1; }
+          done

@@ -1,0 +1,26 @@
+name: Release
+# Publishes the version in a GitHub release's tag, such as v0.1.0, after the live tests pass.
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - name: Check the tag matches Mapricot::VERSION
+        run: grep -qx "  VERSION = \"${GITHUB_REF_NAME#v}\"" lib/mapricot/api.rb
+      - run: bundle exec rake
+        env:
+          MAPRICOT_KEY: ${{ secrets.MAPRICOT_KEY }}
+      - uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
+      - run: gem build mapricot-api.gemspec && gem push mapricot-api-*.gem
