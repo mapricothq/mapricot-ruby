@@ -33,7 +33,7 @@ Each method returns the API's JSON as a Hash with string keys, with the same fie
 | `client.reverse(lat, lon, limit:, lang:)` | [`GET /v1/reverse`](https://mapricot.com/docs/geocoding/#find-the-address-at-a-point) |
 | `client.nearby(lat, lon, category:, radius:, limit:, lang:)` | [`GET /v1/nearby`](https://mapricot.com/docs/places/#list-places-around-a-point) |
 | `client.place(id, lang:)` | [`GET /v1/places/{id}`](https://mapricot.com/docs/places/#look-up-a-saved-place) |
-| `client.route(waypoints, mode:)` | [`POST /v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
+| `client.route(waypoints, mode:, geometries:)` | [`POST /v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
 | `client.ip(address)` | [`GET /v1/ip/{ip}`](https://mapricot.com/docs/ip-geolocation/#look-up-an-address) |
 | `client.account` | `GET /v1/account`, which checks a key and is never billed |
 
@@ -45,7 +45,7 @@ route = client.route([{ lat: 45.5189, lon: -122.6793 }, { lat: 45.5214, lon: -12
 puts route["routes"][0]["durationSeconds"]
 ```
 
-A route's `polyline` is encoded with six decimal places. Decode it with precision 6, as [decoding a route polyline](https://mapricot.com/guides/polyline-decoder/) shows.
+A route's path comes as an encoded `polyline` with five decimal places, which polyline decoders assume. Pass `geometries: "geojson"` to get it as a GeoJSON `LineString` in `geometry` instead, which maps draw without decoding, or `geometries: "polyline6"` for six decimal places.
 
 If your app shows results, show the credits in each response's `attribution`.
 
