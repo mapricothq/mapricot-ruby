@@ -1,26 +1,46 @@
 name: Release
-# Publishes the version in a GitHub release's tag, such as v0.1.0, after the live tests pass.
+# Releases Mapricot::VERSION once it's merged to main and has no tag yet: runs the live tests, pushes the gem
+# to RubyGems, and creates the GitHub release.
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+concurrency: release
 permissions:
   contents: read
-  id-token: write
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.check.outputs.tag }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - id: check
+        run: |
+          version=$(sed -n 's/^  VERSION = "\(.*\)"$/\1/p' lib/mapricot/api.rb)
+          test -n "$version"
+          git ls-remote --exit-code --tags origin "v$version" || echo "tag=v$version" >> "$GITHUB_OUTPUT"
   publish:
+    needs: version
+    if: needs.version.outputs.tag
     runs-on: ubuntu-latest
     environment: release
     timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
         with:
           ruby-version: '3.4'
           bundler-cache: true
-      - name: Check the tag matches Mapricot::VERSION
-        run: grep -qx "  VERSION = \"${GITHUB_REF_NAME#v}\"" lib/mapricot/api.rb
       - run: bundle exec rake
         env:
           MAPRICOT_KEY: ${{ secrets.MAPRICOT_KEY }}
       - uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
       - run: gem build mapricot-api.gemspec && gem push mapricot-api-*.gem
+      - run: gh release create "$TAG" --target "$GITHUB_SHA" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
