@@ -34,6 +34,7 @@ Each method returns the API's JSON as a Hash with string keys, with the same fie
 | `client.nearby(lat, lon, category:, radius:, limit:, lang:)` | [`GET /places/v1/nearby`](https://mapricot.com/docs/places/#list-places-around-a-point) |
 | `client.place(id, lang:)` | [`GET /places/v1/{id}`](https://mapricot.com/docs/places/#look-up-a-saved-place) |
 | `client.route(waypoints, mode:, geometries:)` | [`POST /routing/v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
+| `client.isochrone(location, minutes, mode:)` | [`POST /routing/v1/isochrone`](https://mapricot.com/docs/routing/#get-an-isochrone) |
 | `client.ip(address)` | [`GET /ip-geolocation/v1/{ip}`](https://mapricot.com/docs/ip-geolocation/#look-up-an-address) |
 | `client.account` | `GET /account`, which checks a key and is never billed |
 
@@ -46,6 +47,13 @@ puts route["routes"][0]["durationSeconds"]
 ```
 
 A route's path comes as an encoded `polyline` with five decimal places, which polyline decoders assume. Pass `geometries: "geojson"` to get it as a GeoJSON `LineString` in `geometry` instead, which maps draw without decoding, or `geometries: "polyline6"` for six decimal places.
+
+An isochrone is a GeoJSON `FeatureCollection` with one polygon per time, largest first, so a map that draws them in order shows the smaller ones on top:
+
+```ruby
+area = client.isochrone({ lat: 45.5189, lon: -122.6793 }, [5, 10], mode: "walk")
+puts area["features"].map { |feature| feature["properties"]["minutes"] }.inspect
+```
 
 If your app shows results, show the credits in each response's `attribution`.
 
