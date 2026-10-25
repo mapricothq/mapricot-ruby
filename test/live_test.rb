@@ -39,11 +39,11 @@ class LiveTest < Minitest::Test
     data = client.routing.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], mode: "walk")
     assert_equal 1, data["routes"][0]["legs"].length
     refute_empty data["routes"][0]["polyline"]
-    refute_empty data["routes"][0]["legs"][0]["steps"].last["instruction"]
+    refute data["routes"][0]["legs"][0].key?("steps")
   end
 
   def test_route_steps_in_french
-    data = client.routing.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], lang: "fr")
+    data = client.routing.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], steps: true, lang: "fr")
     assert_includes data["routes"][0]["legs"][0]["steps"].last["instruction"], "destination"
   end
 
