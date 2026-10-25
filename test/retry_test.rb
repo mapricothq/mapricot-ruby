@@ -29,7 +29,7 @@ class RetryTest < Minitest::Test
     client, seen, stop = serve([[503, "origin_overloaded"], [429, "concurrency_exceeded"]])
     assert_equal({ "ok" => true }, client.search("x", focus: { lat: 1, lon: 2 }, country: %w[US CA]))
     assert_equal 3, seen.length
-    assert_equal "/v1/search?q=x&focus=1%2C2&country=US%2CCA", seen[0]
+    assert_equal "/geocoding/v1/search?q=x&focus=1%2C2&country=US%2CCA", seen[0]
   ensure
     stop&.call
   end
