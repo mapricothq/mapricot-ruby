@@ -28,14 +28,14 @@ Each method returns the API's JSON as a Hash with string keys, with the same fie
 
 | Method | Endpoint |
 | --- | --- |
-| `client.search(q, focus:, country:, limit:, lang:)` | [`GET /v1/search`](https://mapricot.com/docs/geocoding/#find-an-address) |
-| `client.autocomplete(q, focus:, country:, limit:, lang:)` | [`GET /v1/autocomplete`](https://mapricot.com/docs/places/#suggest-as-people-type) |
-| `client.reverse(lat, lon, limit:, lang:)` | [`GET /v1/reverse`](https://mapricot.com/docs/geocoding/#find-the-address-at-a-point) |
-| `client.nearby(lat, lon, category:, radius:, limit:, lang:)` | [`GET /v1/nearby`](https://mapricot.com/docs/places/#list-places-around-a-point) |
-| `client.place(id, lang:)` | [`GET /v1/places/{id}`](https://mapricot.com/docs/places/#look-up-a-saved-place) |
-| `client.route(waypoints, mode:, geometries:)` | [`POST /v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
-| `client.ip(address)` | [`GET /v1/ip/{ip}`](https://mapricot.com/docs/ip-geolocation/#look-up-an-address) |
-| `client.account` | `GET /v1/account`, which checks a key and is never billed |
+| `client.search(q, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/search`](https://mapricot.com/docs/geocoding/#find-an-address) |
+| `client.autocomplete(q, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/autocomplete`](https://mapricot.com/docs/geocoding/#suggest-as-people-type) |
+| `client.reverse(lat, lon, limit:, lang:)` | [`GET /geocoding/v1/reverse`](https://mapricot.com/docs/geocoding/#find-the-address-at-a-point) |
+| `client.nearby(lat, lon, category:, radius:, limit:, lang:)` | [`GET /places/v1/nearby`](https://mapricot.com/docs/places/#list-places-around-a-point) |
+| `client.place(id, lang:)` | [`GET /places/v1/{id}`](https://mapricot.com/docs/places/#look-up-a-saved-place) |
+| `client.route(waypoints, mode:, geometries:)` | [`POST /routing/v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
+| `client.ip(address)` | [`GET /ip-geolocation/v1/{ip}`](https://mapricot.com/docs/ip-geolocation/#look-up-an-address) |
+| `client.account` | `GET /account`, which checks a key and is never billed |
 
 Every keyword argument is optional. `focus` and each waypoint are `{ lat:, lon: }`. `country` and `category` take an Array or a comma-separated String.
 

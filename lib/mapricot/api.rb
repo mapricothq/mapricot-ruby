@@ -6,7 +6,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.3.0"
+  VERSION = "0.4.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -33,44 +33,44 @@ module Mapricot
 
     # Find addresses and places matching free text. focus is {lat:, lon:}; country is an Array or a String.
     def search(q, focus: nil, country: nil, limit: nil, lang: nil)
-      get("/v1/search", q: q, focus: focus, country: country, limit: limit, lang: lang)
+      get("/geocoding/v1/search", q: q, focus: focus, country: country, limit: limit, lang: lang)
     end
 
     # Suggest addresses and places as someone types.
     def autocomplete(q, focus: nil, country: nil, limit: nil, lang: nil)
-      get("/v1/autocomplete", q: q, focus: focus, country: country, limit: limit, lang: lang)
+      get("/geocoding/v1/autocomplete", q: q, focus: focus, country: country, limit: limit, lang: lang)
     end
 
     # Find the address nearest a coordinate, or the area around it.
     def reverse(lat, lon, limit: nil, lang: nil)
-      get("/v1/reverse", lat: lat, lon: lon, limit: limit, lang: lang)
+      get("/geocoding/v1/reverse", lat: lat, lon: lon, limit: limit, lang: lang)
     end
 
     # List places around a coordinate, optionally by category, an Array or a String.
     def nearby(lat, lon, category: nil, radius: nil, limit: nil, lang: nil)
-      get("/v1/nearby", lat: lat, lon: lon, category: category, radius: radius, limit: limit, lang: lang)
+      get("/places/v1/nearby", lat: lat, lon: lon, category: category, radius: radius, limit: limit, lang: lang)
     end
 
     # Look up one place by its Mapricot ID.
     def place(id, lang: nil)
-      get("/v1/places/#{escape(id)}", lang: lang)
+      get("/places/v1/#{escape(id)}", lang: lang)
     end
 
     # Find a route through 2 to 20 waypoints, each {lat:, lon:}. mode is "drive" (the default), "walk", or "bicycle".
     # geometries is "polyline" (the default), "polyline6", or "geojson".
     def route(waypoints, mode: nil, geometries: nil)
       body = { waypoints: waypoints, mode: mode, geometries: geometries }.compact
-      request(Net::HTTP::Post, URI("#{@base_url}/v1/route"), JSON.generate(body))
+      request(Net::HTTP::Post, URI("#{@base_url}/routing/v1/route"), JSON.generate(body))
     end
 
     # Approximate location of a public IP address.
     def ip(address)
-      get("/v1/ip/#{escape(address)}")
+      get("/ip-geolocation/v1/#{escape(address)}")
     end
 
     # The key's account. Not billed, so it checks a key for free.
     def account
-      get("/v1/account")
+      get("/account")
     end
 
     private
