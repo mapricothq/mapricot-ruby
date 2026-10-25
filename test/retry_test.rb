@@ -16,7 +16,7 @@ class RetryTest < Minitest::Test
         seen << socket.gets.split[1]
         while (line = socket.gets) && line != "\r\n"; end
         status, code = failures.shift || [200, nil]
-        body = status == 200 ? '{"ok":true}' : JSON.generate(error: { code: code, message: code }, request_id: "r1")
+        body = status == 200 ? '{"ok":true}' : JSON.generate(error: { code: code, message: code }, requestId: "r1")
         socket.write("HTTP/1.1 #{status} X\r\nContent-Type: application/json\r\nX-Request-Id: r1\r\n" \
                      "Content-Length: #{body.bytesize}\r\nConnection: close\r\n\r\n#{body}")
         socket.close
