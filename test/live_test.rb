@@ -41,6 +41,12 @@ class LiveTest < Minitest::Test
     refute_empty data["routes"][0]["polyline"]
   end
 
+  def test_route_geojson
+    data = client.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], geometries: "geojson")
+    assert_equal "LineString", data["routes"][0]["geometry"]["type"]
+    assert_operator data["routes"][0]["geometry"]["coordinates"].length, :>, 1
+  end
+
   def test_ip
     data = client.ip("8.8.8.8")
     assert data["found"]

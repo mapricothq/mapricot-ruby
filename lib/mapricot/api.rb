@@ -6,7 +6,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.2.0"
+  VERSION = "0.3.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -57,8 +57,9 @@ module Mapricot
     end
 
     # Find a route through 2 to 20 waypoints, each {lat:, lon:}. mode is "drive" (the default), "walk", or "bicycle".
-    def route(waypoints, mode: nil)
-      body = { waypoints: waypoints, mode: mode }.compact
+    # geometries is "polyline" (the default), "polyline6", or "geojson".
+    def route(waypoints, mode: nil, geometries: nil)
+      body = { waypoints: waypoints, mode: mode, geometries: geometries }.compact
       request(Net::HTTP::Post, URI("#{@base_url}/v1/route"), JSON.generate(body))
     end
 
