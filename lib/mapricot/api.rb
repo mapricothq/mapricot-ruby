@@ -7,7 +7,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.6.0"
+  VERSION = "0.7.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -148,9 +148,11 @@ module Mapricot
     end
 
     # Find a route through 2 to 20 waypoints, each {lat:, lon:}. mode is "drive" (the default), "walk", or "bicycle".
-    # geometries is "polyline" (the default), "polyline6", or "geojson".
-    def route(waypoints, mode: nil, geometries: nil)
-      @post.call("/routing/v1/route", { waypoints: waypoints, mode: mode, geometries: geometries })
+    # geometries is "polyline" (the default), "polyline6", or "geojson". steps: true adds each leg's turn-by-turn
+    # steps, in lang, an ISO 639-1 language, English by default.
+    def route(waypoints, mode: nil, geometries: nil, steps: nil, lang: nil)
+      body = { waypoints: waypoints, mode: mode, geometries: geometries, steps: steps, lang: lang }
+      @post.call("/routing/v1/route", body)
     end
 
     # The areas reachable from a location, {lat:, lon:}, within 1 to 4 times, each 1 to 60 minutes, as a GeoJSON
