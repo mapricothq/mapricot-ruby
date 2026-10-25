@@ -10,23 +10,17 @@ It needs Ruby 3.1 or later and has no dependencies outside the standard library.
 
 ## Quick start
 
-Create a server key in the [dashboard](https://app.mapricot.com/) and set it as `MAPRICOT_KEY`:
-
-```sh
-export MAPRICOT_KEY="mapricot_sk_…"
-```
+Create a server key in the [dashboard](https://app.mapricot.com/) and pass it to the client. Keep it out of your source code, for example by reading it from an environment variable as here.
 
 ```ruby
 require "mapricot/api"
 
-client = Mapricot::Client.new
+client = Mapricot::Client.new(api_key: ENV.fetch("MAPRICOT_KEY"))
 
 data = client.search("128 SW 3rd Ave, Portland", limit: 1)
 place = data["results"][0]
 puts place["label"], place["lat"], place["lon"]
 ```
-
-Pass the key yourself with `Mapricot::Client.new(api_key: "mapricot_sk_…")`.
 
 ## Methods
 
@@ -51,7 +45,7 @@ route = client.route([{ lat: 45.5189, lon: -122.6793 }, { lat: 45.5214, lon: -12
 puts route["routes"][0]["durationSeconds"]
 ```
 
-A route's `polyline` is encoded with six decimal places. Decode it with precision 6, as [decoding a route polyline](https://mapricot.com/docs/polyline/) shows.
+A route's `polyline` is encoded with six decimal places. Decode it with precision 6, as [decoding a route polyline](https://mapricot.com/guides/polyline-decoder/) shows.
 
 If your app shows results, show the credits in each response's `attribution`.
 

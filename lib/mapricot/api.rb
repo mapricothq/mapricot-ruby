@@ -6,7 +6,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.1.0"
+  VERSION = "0.2.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -22,8 +22,8 @@ module Mapricot
 
   # Each method returns the API's JSON as a Hash with string keys, as in https://mapricot.com/api-reference/.
   class Client
-    def initialize(api_key: ENV["MAPRICOT_KEY"], base_url: "https://api.mapricot.com", timeout: 30, max_retries: 2)
-      raise ArgumentError, "Pass api_key: or set MAPRICOT_KEY." if api_key.nil? || api_key.empty?
+    def initialize(api_key:, base_url: "https://api.mapricot.com", timeout: 30, max_retries: 2)
+      raise ArgumentError, "Pass api_key:, a Mapricot key." if api_key.nil? || api_key.empty?
 
       @api_key = api_key
       @base_url = base_url
