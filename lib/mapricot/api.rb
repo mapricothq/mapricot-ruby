@@ -63,7 +63,7 @@ module Mapricot
       request(Net::HTTP::Post, URI("#{@base_url}/routing/v1/route"), JSON.generate(body))
     end
 
-    # The areas reachable from a location, {lat:, lon:}, within 1 to 4 times, each 1 to 120 minutes, as a GeoJSON
+    # The areas reachable from a location, {lat:, lon:}, within 1 to 4 times, each 1 to 60 minutes, as a GeoJSON
     # FeatureCollection with one polygon per time, largest first. mode is as for route.
     def isochrone(location, minutes, mode: nil)
       body = { location: location, minutes: minutes, mode: mode }.compact
