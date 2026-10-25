@@ -45,7 +45,7 @@ route = client.route([{ lat: 45.5189, lon: -122.6793 }, { lat: 45.5214, lon: -12
 puts route["routes"][0]["durationSeconds"]
 ```
 
-A route's `polyline` is encoded with six decimal places. Decode it with precision 6, as [decoding a route polyline](https://mapricot.com/docs/polyline/) shows.
+A route's `polyline` is encoded with six decimal places. Decode it with precision 6, as [decoding a route polyline](https://mapricot.com/guides/polyline-decoder/) shows.
 
 If your app shows results, show the credits in each response's `attribution`.
 
