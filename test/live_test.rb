@@ -41,6 +41,13 @@ class LiveTest < Minitest::Test
     refute_empty data["routes"][0]["polyline"]
   end
 
+  def test_isochrone
+    data = client.isochrone({ lat: 43.7396, lon: 7.4275 }, [5, 10], mode: "walk")
+    assert_equal [10, 5], data["features"].map { |feature| feature["properties"]["minutes"] }
+    assert_equal "Polygon", data["features"][0]["geometry"]["type"]
+    refute_empty data["attribution"]
+  end
+
   def test_route_geojson
     data = client.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], geometries: "geojson")
     assert_equal "LineString", data["routes"][0]["geometry"]["type"]
