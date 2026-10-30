@@ -34,9 +34,9 @@ Methods are grouped by product, the same way as the API's paths. Each returns th
 | `client.geocoding.reverse(lat, lon, limit:, lang:)` | [`GET /geocoding/v1/reverse`](https://mapricot.com/docs/geocoding/#find-the-address-at-a-point) |
 | `client.places.nearby(lat, lon, category:, radius:, limit:, lang:)` | [`GET /places/v1/nearby`](https://mapricot.com/docs/places/#list-places-around-a-point) |
 | `client.places.get(id, lang:)` | [`GET /places/v1/{id}`](https://mapricot.com/docs/places/#look-up-a-saved-place) |
-| `client.routing.route(waypoints, mode:, geometries:, steps:, lang:)` | [`POST /routing/v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
-| `client.routing.optimize(waypoints, mode:, geometries:, steps:, lang:)` | [`POST /routing/v1/optimize`](https://mapricot.com/docs/routing/#optimize-the-order-of-stops) |
-| `client.routing.isochrone(location, minutes, mode:)` | [`POST /routing/v1/isochrone`](https://mapricot.com/docs/routing/#get-an-isochrone) |
+| `client.routing.route(waypoints, mode:, geometries:, steps:, lang:, costing:)` | [`POST /routing/v1/route`](https://mapricot.com/docs/routing/#get-a-route) |
+| `client.routing.optimize(waypoints, mode:, geometries:, steps:, lang:, costing:)` | [`POST /routing/v1/optimize`](https://mapricot.com/docs/routing/#optimize-the-order-of-stops) |
+| `client.routing.isochrone(location, minutes, mode:, costing:)` | [`POST /routing/v1/isochrone`](https://mapricot.com/docs/routing/#get-an-isochrone) |
 | `client.ip_geolocation.lookup(ip)` | [`GET /ip-geolocation/v1/{ip}`](https://mapricot.com/docs/ip-geolocation/#look-up-an-address) |
 | `client.account` | `GET /account`, which checks a key and is never billed |
 
@@ -60,6 +60,8 @@ A route's path comes as an encoded `polyline` with five decimal places, which po
 Pass `steps: true` and each leg's `steps` has its turn-by-turn directions: an `instruction`, its distance and time, and its `lat` and `lon`. They're in English unless you pass `lang`, such as `lang: "fr"`.
 
 `routing.optimize` takes the same arguments as `routing.route` and returns the route that visits the waypoints in a fast order, keeping the first and last in place. It adds `"waypointOrder"`: the indexes of your waypoints in visiting order, which `"legs"` follow. Every pair of waypoints must be within 400 km of each other for `drive`, or 200 km for `walk` and `bicycle`.
+
+`costing` changes how a route, optimized route, or isochrone picks its roads, with Valhalla's [costing options](https://mapricot.com/docs/routing/#costing-options) for the mode, such as `costing: { use_tolls: 0, use_highways: 0 }` to drive avoiding tolls and highways where it can.
 
 An isochrone is a GeoJSON `FeatureCollection` with one polygon per time, largest first, so a map that draws them in order shows the smaller ones on top:
 

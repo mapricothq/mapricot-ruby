@@ -68,6 +68,19 @@ class LiveTest < Minitest::Test
     refute_empty data["attribution"]
   end
 
+  def test_route_costing
+    stops = [{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }]
+    data = client.routing.route(stops, mode: "walk", costing: { type: "wheelchair" })
+    assert_equal 1, data["routes"][0]["legs"].length
+    error = assert_raises(Mapricot::Error) { client.routing.route(stops, mode: "walk", costing: { use_tolls: 0 }) }
+    assert_includes error.message, "costing.use_tolls isn't an option for walk"
+  end
+
+  def test_isochrone_costing
+    data = client.routing.isochrone({ lat: 43.7396, lon: 7.4275 }, [5], mode: "walk", costing: { walking_speed: 3 })
+    assert_equal 1, data["features"].length
+  end
+
   def test_route_geojson
     data = client.routing.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], geometries: "geojson")
     assert_equal "LineString", data["routes"][0]["geometry"]["type"]
