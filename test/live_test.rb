@@ -47,6 +47,13 @@ class LiveTest < Minitest::Test
     assert_includes data["routes"][0]["legs"][0]["steps"].last["instruction"], "destination"
   end
 
+  def test_optimize
+    stops = [{ lat: 43.7396, lon: 7.4275 }, { lat: 43.7311, lon: 7.4197 }, { lat: 43.7445, lon: 7.431 }, { lat: 43.734, lon: 7.4222 }]
+    data = client.routing.optimize(stops)
+    assert_equal [0, 2, 1, 3], data["routes"][0]["waypointOrder"]
+    assert_equal 3, data["routes"][0]["legs"].length
+  end
+
   def test_isochrone
     data = client.routing.isochrone({ lat: 43.7396, lon: 7.4275 }, [5, 10], mode: "walk")
     assert_equal [10, 5], data["features"].map { |feature| feature["properties"]["minutes"] }
