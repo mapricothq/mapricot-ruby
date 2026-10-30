@@ -15,6 +15,13 @@ class LiveTest < Minitest::Test
     refute_empty data["attribution"]
   end
 
+  def test_search_batch
+    data = client.geocoding.search_batch([{ q: "128 SW 3rd Ave, Portland", country: ["US"], limit: 1 }, { q: "" }])
+    first, second = data["responses"]
+    assert_equal "Portland", first["results"][0]["address"]["locality"]
+    assert_equal "invalid_request", second["error"]["code"]
+  end
+
   def test_autocomplete
     data = client.geocoding.autocomplete("stumptown", focus: { lat: 45.52, lon: -122.68 }, limit: 1)
     assert_match(/Stumptown/, data["results"][0]["name"])

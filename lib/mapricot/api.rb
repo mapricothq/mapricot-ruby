@@ -33,7 +33,7 @@ module Mapricot
       @base_url = base_url
       @timeout = timeout
       @max_retries = max_retries
-      @geocoding = GeocodingService.new(method(:get))
+      @geocoding = GeocodingService.new(method(:get), method(:post), method(:query_value))
       @places = PlacesService.new(method(:get))
       @routing = RoutingService.new(method(:post))
       @ip_geolocation = IpGeolocationService.new(method(:get))
@@ -104,13 +104,23 @@ module Mapricot
 
   # client.geocoding: the /geocoding/v1 endpoints.
   class GeocodingService
-    def initialize(get)
+    def initialize(get, post, query_value)
       @get = get
+      @post = post
+      @query_value = query_value
     end
 
     # Find addresses and places matching free text. focus is {lat:, lon:}; country is an Array or a String.
     def search(q, focus: nil, country: nil, limit: nil, lang: nil)
       @get.call("/geocoding/v1/search", q: q, focus: focus, country: country, limit: limit, lang: lang)
+    end
+
+    # Run up to 100 searches in one request, each a Hash of search's parameters, as in { q: "…", limit: 1 }. Each
+    # completed search is billed as one request. "responses" answers them in order, each with "results" and
+    # "attribution", or an "error" with the code and message the search would get on its own, which isn't raised.
+    def search_batch(queries)
+      body = { queries: queries.map { |query| query.compact.transform_values { |value| @query_value.call(value) } } }
+      @post.call("/geocoding/v1/search/batch", body)
     end
 
     # Suggest addresses and places as someone types.
