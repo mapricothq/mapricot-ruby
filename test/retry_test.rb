@@ -6,7 +6,7 @@ require "socket"
 require "mapricot/api"
 
 class RetryTest < Minitest::Test
-  # Answers each request with the next failure, then with 200.
+  # Answers each request with the next failure, then with 200, and records its path and any JSON body.
   def serve(failures)
     server = TCPServer.new("127.0.0.1", 0)
     seen = []
@@ -14,7 +14,11 @@ class RetryTest < Minitest::Test
       loop do
         socket = server.accept
         seen << socket.gets.split[1]
-        while (line = socket.gets) && line != "\r\n"; end
+        length = 0
+        while (line = socket.gets) && line != "\r\n"
+          length = line.split(":")[1].to_i if line.downcase.start_with?("content-length:")
+        end
+        seen << JSON.parse(socket.read(length)) if length.positive?
         status, code = failures.shift || [200, nil]
         body = status == 200 ? '{"ok":true}' : JSON.generate(error: { code: code, message: code }, requestId: "r1")
         socket.write("HTTP/1.1 #{status} X\r\nContent-Type: application/json\r\nX-Request-Id: r1\r\n" \
@@ -39,6 +43,15 @@ class RetryTest < Minitest::Test
     error = assert_raises(Mapricot::Error) { client.account }
     assert_equal [429, "credit_exhausted", "r1"], [error.status, error.code, error.request_id]
     assert_equal 1, seen.length
+  ensure
+    stop&.call
+  end
+
+  def test_search_batch_sends_queries_as_search_parameters
+    client, seen, stop = serve([])
+    client.geocoding.search_batch([{ q: "x", focus: { lat: 1, lon: 2 }, country: %w[US CA], limit: 1, lang: nil }])
+    query = { "q" => "x", "focus" => "1,2", "country" => "US,CA", "limit" => "1" }
+    assert_equal ["/geocoding/v1/search/batch", { "queries" => [query] }], seen
   ensure
     stop&.call
   end

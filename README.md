@@ -29,6 +29,7 @@ Methods are grouped by product, the same way as the API's paths. Each returns th
 | Method | Endpoint |
 | --- | --- |
 | `client.geocoding.search(q, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/search`](https://mapricot.com/docs/geocoding/#find-an-address) |
+| `client.geocoding.search_batch(queries)` | [`POST /geocoding/v1/search/batch`](https://mapricot.com/docs/geocoding/#search-a-list-of-addresses) |
 | `client.geocoding.autocomplete(q, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/autocomplete`](https://mapricot.com/docs/geocoding/#suggest-as-people-type) |
 | `client.geocoding.reverse(lat, lon, limit:, lang:)` | [`GET /geocoding/v1/reverse`](https://mapricot.com/docs/geocoding/#find-the-address-at-a-point) |
 | `client.places.nearby(lat, lon, category:, radius:, limit:, lang:)` | [`GET /places/v1/nearby`](https://mapricot.com/docs/places/#list-places-around-a-point) |
@@ -45,6 +46,13 @@ Every keyword argument is optional. `focus` and each waypoint are `{ lat:, lon: 
 nearby = client.places.nearby(45.52, -122.68, category: ["food:coffee_shop"], radius: 1000)
 route = client.routing.route([{ lat: 45.5189, lon: -122.6793 }, { lat: 45.5214, lon: -122.6828 }], mode: "walk")
 puts route["routes"][0]["durationSeconds"]
+```
+
+`search_batch` runs up to 100 searches in one request. Each query is a Hash of `search`'s parameters, and `"responses"` answers them in the same order, each with `"results"` and `"attribution"`, or an `"error"` with the `"code"` and `"message"` that search would get, without raising. Each completed search is billed as one request; errors aren't.
+
+```ruby
+batch = client.geocoding.search_batch([{ q: "128 SW 3rd Ave, Portland", limit: 1 }, { q: "10 Downing Street, London", limit: 1 }])
+batch["responses"].each { |response| puts response.dig("error", "message") || response["results"][0]["label"] }
 ```
 
 A route's path comes as an encoded `polyline` with five decimal places, which polyline decoders assume. Pass `geometries: "geojson"` to get it as a GeoJSON `LineString` in `geometry` instead, which maps draw without decoding, or `geometries: "polyline6"` for six decimal places.
