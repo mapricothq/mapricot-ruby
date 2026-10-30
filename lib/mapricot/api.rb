@@ -7,7 +7,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.7.0"
+  VERSION = "0.8.0"
 
   # An error response from the API.
   class Error < StandardError
