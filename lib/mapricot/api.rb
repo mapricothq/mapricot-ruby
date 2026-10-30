@@ -7,7 +7,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.9.0"
+  VERSION = "0.10.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -159,24 +159,25 @@ module Mapricot
 
     # Find a route through 2 to 20 waypoints, each {lat:, lon:}. mode is "drive" (the default), "walk", or "bicycle".
     # geometries is "polyline" (the default), "polyline6", or "geojson". steps: true adds each leg's turn-by-turn
-    # steps, in lang, an ISO 639-1 language, English by default.
-    def route(waypoints, mode: nil, geometries: nil, steps: nil, lang: nil)
-      body = { waypoints: waypoints, mode: mode, geometries: geometries, steps: steps, lang: lang }
+    # steps, in lang, an ISO 639-1 language, English by default. costing takes Valhalla's costing options for the mode,
+    # such as { useTolls: 0 }: https://mapricot.com/docs/routing/#costing-options.
+    def route(waypoints, mode: nil, geometries: nil, steps: nil, lang: nil, costing: nil)
+      body = { waypoints: waypoints, mode: mode, geometries: geometries, steps: steps, lang: lang, costing: costing }
       @post.call("/routing/v1/route", body)
     end
 
     # Find a fast route through 2 to 20 waypoints, keeping the first and last in place and reordering the rest. It
     # takes the same arguments as route, and the route adds "waypointOrder": the indexes of the waypoints sent, in
     # visiting order.
-    def optimize(waypoints, mode: nil, geometries: nil, steps: nil, lang: nil)
-      body = { waypoints: waypoints, mode: mode, geometries: geometries, steps: steps, lang: lang }
+    def optimize(waypoints, mode: nil, geometries: nil, steps: nil, lang: nil, costing: nil)
+      body = { waypoints: waypoints, mode: mode, geometries: geometries, steps: steps, lang: lang, costing: costing }
       @post.call("/routing/v1/optimize", body)
     end
 
     # The areas reachable from a location, {lat:, lon:}, within 1 to 4 times, each 1 to 60 minutes, as a GeoJSON
-    # FeatureCollection with one polygon per time, largest first. mode is as for route.
-    def isochrone(location, minutes, mode: nil)
-      @post.call("/routing/v1/isochrone", { location: location, minutes: minutes, mode: mode })
+    # FeatureCollection with one polygon per time, largest first. mode and costing are as for route.
+    def isochrone(location, minutes, mode: nil, costing: nil)
+      @post.call("/routing/v1/isochrone", { location: location, minutes: minutes, mode: mode, costing: costing })
     end
   end
 
