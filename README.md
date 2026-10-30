@@ -61,7 +61,7 @@ Pass `steps: true` and each leg's `steps` has its turn-by-turn directions: an `i
 
 `routing.optimize` takes the same arguments as `routing.route` and returns the route that visits the waypoints in a fast order, keeping the first and last in place. It adds `"waypointOrder"`: the indexes of your waypoints in visiting order, which `"legs"` follow. Every pair of waypoints must be within 400 km of each other for `drive`, or 200 km for `walk` and `bicycle`.
 
-`costing` changes how a route, optimized route, or isochrone picks its roads, with Valhalla's [costing options](https://mapricot.com/docs/routing/#costing-options) for the mode, such as `costing: { use_tolls: 0, use_highways: 0 }` to drive avoiding tolls and highways where it can.
+`costing` changes how a route, optimized route, or isochrone picks its roads, with Valhalla's [costing options](https://mapricot.com/docs/routing/#costing-options) for the mode, such as `costing: { useTolls: 0, useHighways: 0 }` to drive avoiding tolls and highways where it can.
 
 An isochrone is a GeoJSON `FeatureCollection` with one polygon per time, largest first, so a map that draws them in order shows the smaller ones on top:
 

@@ -160,7 +160,7 @@ module Mapricot
     # Find a route through 2 to 20 waypoints, each {lat:, lon:}. mode is "drive" (the default), "walk", or "bicycle".
     # geometries is "polyline" (the default), "polyline6", or "geojson". steps: true adds each leg's turn-by-turn
     # steps, in lang, an ISO 639-1 language, English by default. costing takes Valhalla's costing options for the mode,
-    # such as { use_tolls: 0 }: https://mapricot.com/docs/routing/#costing-options.
+    # such as { useTolls: 0 }: https://mapricot.com/docs/routing/#costing-options.
     def route(waypoints, mode: nil, geometries: nil, steps: nil, lang: nil, costing: nil)
       body = { waypoints: waypoints, mode: mode, geometries: geometries, steps: steps, lang: lang, costing: costing }
       @post.call("/routing/v1/route", body)

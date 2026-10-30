@@ -72,12 +72,12 @@ class LiveTest < Minitest::Test
     stops = [{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }]
     data = client.routing.route(stops, mode: "walk", costing: { type: "wheelchair" })
     assert_equal 1, data["routes"][0]["legs"].length
-    error = assert_raises(Mapricot::Error) { client.routing.route(stops, mode: "walk", costing: { use_tolls: 0 }) }
-    assert_includes error.message, "costing.use_tolls isn't an option for walk"
+    error = assert_raises(Mapricot::Error) { client.routing.route(stops, mode: "walk", costing: { useTolls: 0 }) }
+    assert_includes error.message, "costing.useTolls isn't an option for walk"
   end
 
   def test_isochrone_costing
-    data = client.routing.isochrone({ lat: 43.7396, lon: 7.4275 }, [5], mode: "walk", costing: { walking_speed: 3 })
+    data = client.routing.isochrone({ lat: 43.7396, lon: 7.4275 }, [5], mode: "walk", costing: { walkingSpeed: 3 })
     assert_equal 1, data["features"].length
   end
 
