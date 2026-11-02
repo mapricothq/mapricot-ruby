@@ -22,7 +22,7 @@ module Mapricot
   end
 
   # Methods are grouped by product, as in client.geocoding.search. Each returns the API's JSON as a Hash with string
-  # keys, as in https://mapricot.com/api-reference/.
+  # keys, as in https://mapricot.com/docs/api-reference/.
   class Client
     attr_reader :geocoding, :places, :routing, :ip_geolocation
 
