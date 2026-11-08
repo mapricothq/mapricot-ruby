@@ -81,6 +81,13 @@ class LiveTest < Minitest::Test
     assert_equal 1, data["features"].length
   end
 
+  def test_isochrone_generalize
+    location = { lat: 43.7396, lon: 7.4275 }
+    detailed = client.routing.isochrone(location, [10], mode: "walk")
+    smooth = client.routing.isochrone(location, [10], mode: "walk", generalize: 300)
+    assert_operator JSON.generate(smooth["features"][0]["geometry"]).length, :<, JSON.generate(detailed["features"][0]["geometry"]).length
+  end
+
   def test_route_geojson
     data = client.routing.route([{ lat: 43.7396, lon: 7.4275 }, { lat: 43.734, lon: 7.4222 }], geometries: "geojson")
     assert_equal "LineString", data["routes"][0]["geometry"]["type"]
