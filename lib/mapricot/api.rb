@@ -7,7 +7,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.11.0"
+  VERSION = "0.12.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -110,12 +110,16 @@ module Mapricot
       @query_value = query_value
     end
 
-    # Find addresses and places matching free text. focus is {lat:, lon:}; country is an Array or a String.
-    def search(q, focus: nil, country: nil, limit: nil, lang: nil)
-      @get.call("/geocoding/v1/search", q: q, focus: focus, country: country, limit: limit, lang: lang)
+    # Find addresses and places matching free text in q, or an address given in parts in place of q, as in
+    # search(address: "10 Downing Street", locality: "London"). focus is {lat:, lon:}; country is an Array or a String.
+    def search(q = nil, address: nil, locality: nil, county: nil, region: nil, postal_code: nil, focus: nil, country: nil,
+               limit: nil, lang: nil)
+      @get.call("/geocoding/v1/search", q: q, address: address, locality: locality, county: county, region: region,
+                                        postalCode: postal_code, focus: focus, country: country, limit: limit, lang: lang)
     end
 
-    # Run up to 100 searches in one request, each a Hash of search's parameters, as in { q: "…", limit: 1 }. Each
+    # Run up to 100 searches in one request, each a Hash of search's parameters, as in { q: "…", limit: 1 } or
+    # { address: "…", postalCode: "…" }, with the API's names. Each
     # completed search is billed as one request. "responses" answers them in order, each with "results" and
     # "attribution", or an "error" with the code and message the search would get on its own, which isn't raised.
     def search_batch(queries)

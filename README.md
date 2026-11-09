@@ -28,7 +28,7 @@ Methods are grouped by product, the same way as the API's paths. Each returns th
 
 | Method | Endpoint |
 | --- | --- |
-| `client.geocoding.search(q, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/search`](https://mapricot.com/docs/geocoding/#find-an-address) |
+| `client.geocoding.search(q, address:, locality:, county:, region:, postal_code:, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/search`](https://mapricot.com/docs/geocoding/#find-an-address) |
 | `client.geocoding.search_batch(queries)` | [`POST /geocoding/v1/search/batch`](https://mapricot.com/docs/geocoding/#search-a-list-of-addresses) |
 | `client.geocoding.autocomplete(q, focus:, country:, limit:, lang:)` | [`GET /geocoding/v1/autocomplete`](https://mapricot.com/docs/geocoding/#suggest-as-people-type) |
 | `client.geocoding.reverse(lat, lon, limit:, lang:)` | [`GET /geocoding/v1/reverse`](https://mapricot.com/docs/geocoding/#find-the-address-at-a-point) |
@@ -48,7 +48,13 @@ route = client.routing.route([{ lat: 45.5189, lon: -122.6793 }, { lat: 45.5214, 
 puts route["routes"][0]["durationSeconds"]
 ```
 
-`search_batch` runs up to 100 searches in one request. Each query is a Hash of `search`'s parameters, and `"responses"` answers them in the same order, each with `"results"` and `"attribution"`, or an `"error"` with the `"code"` and `"message"` that search would get, without raising. Each completed search is billed as one request; errors aren't.
+When you already have an address in parts, such as a spreadsheet's columns, pass them in place of `q`. Search ignores a blank part:
+
+```ruby
+data = client.geocoding.search(address: "10 Downing Street", locality: "London", postal_code: "SW1A 2AA", country: "GB")
+```
+
+`search_batch` runs up to 100 searches in one request. Each query is a Hash of `search`'s parameters, with `q` or the address parts named as in the API, such as `postalCode`, and `"responses"` answers them in the same order, each with `"results"` and `"attribution"`, or an `"error"` with the `"code"` and `"message"` that search would get, without raising. Each completed search is billed as one request; errors aren't.
 
 ```ruby
 batch = client.geocoding.search_batch([{ q: "128 SW 3rd Ave, Portland", limit: 1 }, { q: "10 Downing Street, London", limit: 1 }])

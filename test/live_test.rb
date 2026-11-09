@@ -15,6 +15,11 @@ class LiveTest < Minitest::Test
     refute_empty data["attribution"]
   end
 
+  def test_search_by_address_parts
+    data = client.geocoding.search(address: "128 SW 3rd Ave", locality: "Portland", country: ["US"], limit: 1)
+    assert_equal "Portland", data["results"][0]["address"]["locality"]
+  end
+
   def test_search_batch
     data = client.geocoding.search_batch([{ q: "128 SW 3rd Ave, Portland", country: ["US"], limit: 1 }, { q: "" }])
     first, second = data["responses"]
