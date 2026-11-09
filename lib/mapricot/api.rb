@@ -7,7 +7,7 @@ require "net/http"
 # The official client for the Mapricot API: address and place search, reverse geocoding, nearby places, routing,
 # and IP geolocation. See https://mapricot.com/docs/ruby/.
 module Mapricot
-  VERSION = "0.12.0"
+  VERSION = "0.13.0"
 
   # An error response from the API.
   class Error < StandardError
@@ -133,7 +133,7 @@ module Mapricot
     end
 
     # Find the address nearest a coordinate, or the area around it.
-    def reverse(lat, lon, limit: nil, lang: nil)
+    def reverse(lat:, lon:, limit: nil, lang: nil)
       @get.call("/geocoding/v1/reverse", lat: lat, lon: lon, limit: limit, lang: lang)
     end
   end
@@ -145,7 +145,7 @@ module Mapricot
     end
 
     # List places around a coordinate, optionally by category, an Array or a String.
-    def nearby(lat, lon, category: nil, radius: nil, limit: nil, lang: nil)
+    def nearby(lat:, lon:, category: nil, radius: nil, limit: nil, lang: nil)
       @get.call("/places/v1/nearby", lat: lat, lon: lon, category: category, radius: radius, limit: limit, lang: lang)
     end
 
@@ -181,7 +181,7 @@ module Mapricot
     # The areas reachable from a location, {lat:, lon:}, within 1 to 4 times, each 1 to 60 minutes, as a GeoJSON
     # FeatureCollection with one polygon per time, largest first. mode and costing are as for route. generalize smooths
     # each outline to within that many meters, from 10 to 5000; left out, the API picks it from the travel time.
-    def isochrone(location, minutes, mode: nil, costing: nil, generalize: nil)
+    def isochrone(location:, minutes:, mode: nil, costing: nil, generalize: nil)
       @post.call("/routing/v1/isochrone", { location: location, minutes: minutes, mode: mode, costing: costing, generalize: generalize })
     end
   end
