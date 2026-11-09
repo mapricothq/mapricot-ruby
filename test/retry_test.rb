@@ -47,6 +47,14 @@ class RetryTest < Minitest::Test
     stop&.call
   end
 
+  def test_search_sends_an_address_in_parts_in_place_of_q
+    client, seen, stop = serve([])
+    client.geocoding.search(address: "10 Downing Street", postal_code: "SW1A 2AA", country: "GB")
+    assert_equal ["/geocoding/v1/search?address=10+Downing+Street&postalCode=SW1A+2AA&country=GB"], seen
+  ensure
+    stop&.call
+  end
+
   def test_search_batch_sends_queries_as_search_parameters
     client, seen, stop = serve([])
     client.geocoding.search_batch([{ q: "x", focus: { lat: 1, lon: 2 }, country: %w[US CA], limit: 1, lang: nil }])
