@@ -33,12 +33,12 @@ class LiveTest < Minitest::Test
   end
 
   def test_reverse
-    data = client.geocoding.reverse(45.5217, -122.6733, limit: 1)
+    data = client.geocoding.reverse(lat: 45.5217, lon: -122.6733, limit: 1)
     assert_kind_of Integer, data["results"][0]["distanceMeters"]
   end
 
   def test_nearby
-    data = client.places.nearby(45.52, -122.68, category: ["food:coffee_shop"], radius: 1000, limit: 1)
+    data = client.places.nearby(lat: 45.52, lon: -122.68, category: ["food:coffee_shop"], radius: 1000, limit: 1)
     assert_includes data["results"][0]["categories"], "food:coffee_shop"
   end
 
@@ -67,7 +67,7 @@ class LiveTest < Minitest::Test
   end
 
   def test_isochrone
-    data = client.routing.isochrone({ lat: 43.7396, lon: 7.4275 }, [5, 10], mode: "walk")
+    data = client.routing.isochrone(location: { lat: 43.7396, lon: 7.4275 }, minutes: [5, 10], mode: "walk")
     assert_equal [10, 5], data["features"].map { |feature| feature["properties"]["minutes"] }
     assert_equal "Polygon", data["features"][0]["geometry"]["type"]
     refute_empty data["attribution"]
@@ -82,14 +82,14 @@ class LiveTest < Minitest::Test
   end
 
   def test_isochrone_costing
-    data = client.routing.isochrone({ lat: 43.7396, lon: 7.4275 }, [5], mode: "walk", costing: { walkingSpeed: 3 })
+    data = client.routing.isochrone(location: { lat: 43.7396, lon: 7.4275 }, minutes: [5], mode: "walk", costing: { walkingSpeed: 3 })
     assert_equal 1, data["features"].length
   end
 
   def test_isochrone_generalize
     location = { lat: 43.7396, lon: 7.4275 }
-    detailed = client.routing.isochrone(location, [10], mode: "walk")
-    smooth = client.routing.isochrone(location, [10], mode: "walk", generalize: 300)
+    detailed = client.routing.isochrone(location: location, minutes: [10], mode: "walk")
+    smooth = client.routing.isochrone(location: location, minutes: [10], mode: "walk", generalize: 300)
     assert_operator JSON.generate(smooth["features"][0]["geometry"]).length, :<, JSON.generate(detailed["features"][0]["geometry"]).length
   end
 
